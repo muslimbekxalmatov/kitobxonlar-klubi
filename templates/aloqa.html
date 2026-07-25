@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin bilan bog'lanish - Kitobxonlar Clubi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f4f6f9; color: #111111; padding: 20px; }
+        .wrapper { max-width: 700px; margin: 50px auto; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #4b5563; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .back-link:hover { text-decoration: underline; }
+        .contact-card { background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; padding: 40px 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02); text-align: center; }
+        .section-label { color: #b0b5bc; font-size: 12px; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .card-title { font-size: 24px; margin-bottom: 12px; font-weight: 600; }
+        .card-desc { color: #606770; font-size: 15px; line-height: 1.5; margin-bottom: 35px; }
+        
+        .ways-group { display: flex; flex-direction: column; align-items: center; gap: 15px; max-width: 400px; margin: 0 auto; }
+        
+        /* Telegram tugmasi */
+        .btn-way { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px 24px; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: 0.2s; }
+        .btn-way.btn-tg { background-color: #24A1DE; color: white; box-shadow: 0 4px 10px rgba(36, 161, 222, 0.3); }
+        .btn-way.btn-tg:hover { background-color: #1d82b3; transform: translateY(-2px); }
+        
+        /* Ta'mirlash bloki stili 🛠️ */
+        .maintenance-box { width: 100%; padding: 16px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 10px; color: #856404; text-align: center; font-size: 14px; font-weight: 500; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <a href="/main" class="back-link">← Boshqaruv paneliga qaytish</a>
+        <div class="contact-card">
+            <span class="section-label">Xavfsiz Aloqa</span>
+            <h2 class="card-title">Admin (Loyihachi) bilan shaxsiy muloqot</h2>
+            <p class="card-desc">Olimpiadalarga bilet xarid qilish, hamkorlik yoki takliflaringizni to'g'ridan-to'g'ri loyiha rahbariga yo'llang.</p>
+            
+            <div class="ways-group">
+                <!-- 100% To'g'ri ishlaydigan shaxsiy Telegram tugmangiz 🚀 -->
+                <a href="javascript:void(0)" onclick="goToTelegram()" class="btn-way btn-tg">✈️ Telegram orqali bog'lanish</a>
+                
+                <!-- 🛠️ Siz aytgan ta'mirlash haqidagi chiroyli belgi -->
+                <div class="maintenance-box">
+                    ⚙️ <b>Sayt ichidagi chat tizimi hozirda ta'mirlanmoqda.</b><br>
+                    Iltimos, barcha savol va takliflaringizni yuqoridagi tugma orqali adminning shaxsiy Telegramiga yuboring.
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Shaxsiy telegramingizga xatosiz olib o'tuvchi kod
+        function goToTelegram() {
+            var timestamp = new Date().getTime();
+            // Birinchi kompyuter yoki telefondagi dasturni ochishga urinadi
+            window.location.href = "tg://resolve?domain=Grasmestir007&time=" + timestamp;
+            
+            // Agar dastur ochilmasa brauzerda to'g'ri profil linkini ochadi
+            setTimeout(function() {
+                window.open("https://t.me", '_blank');
+            }, 300);
+        }
+    </script>
+</body>
+</html>

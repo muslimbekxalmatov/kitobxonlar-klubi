@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitobxonlik Olimpiadasi - Kitobxonlar Clubi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f4f6f9; color: #111111; padding: 20px; }
+
+        .wrapper { max-width: 700px; margin: 50px auto; }
+        
+        .quiz-card {
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f4f6f9;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .quiz-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; color: #ff9500; }
+        
+        .btn-exit {
+            padding: 10px 18px;
+            background-color: #111111;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Start Oynasi va Reyting */
+        .start-box { text-align: center; padding: 20px 0; }
+        .rating-badge {
+            display: inline-block;
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            border: 1px solid #ffeeba;
+        }
+        .start-desc { color: #666; font-size: 15px; margin-bottom: 30px; line-height: 1.6; }
+        .btn-start {
+            padding: 14px 40px;
+            background-color: #ff9500;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-start:hover { background-color: #e08400; }
+
+        /* Test qismi */
+        .quiz-section { display: none; }
+        .question-text { font-size: 18px; font-weight: 600; line-height: 1.5; margin-bottom: 25px; color: #1c1c1e; }
+        .options-group { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            width: 100%;
+            padding: 16px 20px;
+            background-color: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333333;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .option-btn:hover { border-color: #111111; background-color: #fafafa; }
+        .option-btn.selected { border: 2px solid #111111; font-weight: 600; }
+
+        /* Natija oynasi */
+        .result-box { display: none; text-align: center; padding: 20px 0; }
+        .result-title { font-size: 24px; font-weight: 700; color: #34c759; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="quiz-card">
+            
+            <div class="quiz-header">
+                <div class="quiz-title">🏆 Onlayn Olimpiada</div>
+                <a href="main.html" class="btn-exit">Chiqish</a>
+            </div>
+
+            <!-- 1. KIRGANDA REYTING VA BOSHLASH OYNASI -->
+            <div class="start-box" id="startBox">
+                <div class="rating-badge" id="userRating">📊 Hisoblanmoqda...</div>
+                <p class="start-desc">Olimpiada savollaridan iborat. Har bir to'g'ri javob reytingdagi o'rningizni oshiradi. Tayyor bo'lsangiz, testni boshlang!</p>
+                <button class="btn-start" onclick="startQuiz()">Testni boshlash</button>
+            </div>
+
+            <!-- 2. TESTLAR QISMI -->
+            <div class="quiz-section" id="quizSection">
+                <div class="question-text" id="question">Savol yuklanmoqda...</div>
+                <div class="options-group">
+                    <button class="option-btn" id="optA" onclick="selectOption('A')">A) </button>
+                    <button class="option-btn" id="optB" onclick="selectOption('B')">B) </button>
+                    <button class="option-btn" id="optC" onclick="selectOption('C')">C) </button>
+                </div>
+            </div>
+
+            <!-- 3. NATIJA OYNASI -->
+            <div class="result-box" id="resultBox">
+                <div class="result-title">🎉 Olimpiada yakunlandi!</div>
+                <p id="scoreText" style="font-size: 16px; color: #666; margin-bottom: 25px;"></p>
+                <a href="main.html" class="btn-exit" style="background-color: #007aff; text-decoration: none; display: inline-block;">Bosh sahifaga qaytish</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        var quizData = [
+            { question: "“O‘tkan kunlar” romanida Otabekning otasining ismi kim?", a: "Ziyo shohichi", b: "Yusufbek hoji", c: "Alimdor dodxoh", correct: "B" },
+            { question: "“Mehrobdan chayon” romani muallifi kim?", a: "Abdulla Qodiriy", b: "Cho'lpon", c: "Abdulla Qahhor", correct: "A" }
+        ];
+
+        var currentQuestionIndex = 0;
+        var score = 0;
+        var currentEmail = localStorage.getItem("saved_email") || "test@test.com";
+        var currentName = localStorage.getItem("saved_name") || "Kitobxon";
+
+        window.onload = function() {
+            calculateRating();
+        };
+
+        function calculateRating() {
+            var leaderboard = JSON.parse(localStorage.getItem("olimpiada_leaderboard")) || [];
+            var userPerformance = leaderboard.find(user => user.email === currentEmail);
+            
+            leaderboard.sort((a, b) => b.ball - a.ball);
+
+            var myRank = 1;
+            for(var i = 0; i < leaderboard.length; i++) {
+                if(leaderboard[i].email === currentEmail) {
+                    myRank = i + 1;
+                    break;
+                }
+            }
+
+            var totalParticipants = leaderboard.length === 0 ? 1 : leaderboard.length;
+            if(!userPerformance && leaderboard.length > 0) {
+                myRank = leaderboard.length + 1;
+                totalParticipants++;
+            }
+
+            document.getElementById("userRating").innerText = "📊 " + currentName.toLowerCase() + ", sizning joriy o'rningiz: " + myRank + "-o'rin (Jami " + totalParticipants + " ta ishtirokchi ichida)";
+        }
+
+        function startQuiz() {
+            document.getElementById("startBox").style.display = "none";
+            document.getElementById("quizSection").style.display = "block";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                saveAndShowResult();
+                return;
+            }
+
+            var currentQuiz = quizData[currentQuestionIndex];
+            document.getElementById("question").innerText = (currentQuestionIndex + 1) + ". " + currentQuiz.question;
+            document.getElementById("optA").innerText = "A) " + currentQuiz.a;
+            document.getElementById("optB").innerText = "B) " + currentQuiz.b;
+            document.getElementById("optC").innerText = "C) " + currentQuiz.c;
+
+            var buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function selectOption(reply) {
+            var currentQuiz = quizData[currentQuestionIndex];
+            if (reply === currentQuiz.correct) {
+                score++;
+            }
+
+            document.getElementById("opt" + reply).classList.add("selected");
+
+            setTimeout(function() {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 400);
+        }
+
+        function saveAndShowResult() {
+            document.getElementById("quizSection").style.display = "none";
+            document.getElementById("resultBox").style.display = "block";
+
+            var leaderboard = JSON.parse(localStorage.getItem("olimpiada_leaderboard")) || [];
+            var userIndex = leaderboard.findIndex(user => user.email === currentEmail);
+            
+            if(userIndex > -1) {
+                if(score > leaderboard[userIndex].ball) {
+                    leaderboard[userIndex].ball = score;
+                }
+            } else {
+                leaderboard.push({ name: currentName, email: currentEmail, ball: score });
+            }
+
+            localStorage.setItem("olimpiada_leaderboard", JSON.stringify(leaderboard));
+            leaderboard.sort((a, b) => b.ball - a.ball);
+
+            var newRank = 1;
+            for(var i = 0; i < leaderboard.length; i++) {
+                if(leaderboard[i].email === currentEmail) {
+                    newRank = i + 1;
+                    break;
+                }
+            }
+
+            document.getElementById("scoreText").innerHTML = "Siz jami " + quizData.length + " ta savoldan <b>" + score + "</b> tasiga to'g'ri javob berdingiz!<br><br><b>Yangi reytingingiz:</b> " + newRank + "-o'ringa joylashdingiz! 🚀";
+        }
+    </script>
+</body>
+</html>

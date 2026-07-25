@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitobxonlar Clubi - Kirish va Ro'yxatdan o'tish</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f4f6f9; color: #111111; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .auth-container { background: #ffffff; width: 380px; padding: 30px; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .auth-title { text-align: center; font-size: 24px; font-weight: 600; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #666; font-size: 14px; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #eaeaea; border-radius: 8px; font-size: 15px; outline: none; background-color: #fafafa; transition: 0.2s; }
+        .form-group input:focus { border-color: #0066ff; background-color: #ffffff; }
+        .btn-submit { width: 100%; padding: 12px; background-color: #0066ff; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 10px; }
+        .btn-submit:hover { background-color: #0052cc; }
+        .switch-text { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
+        .switch-text span { color: #0066ff; cursor: pointer; text-decoration: underline; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="auth-container" id="register-box">
+        <div class="auth-title">Roʻyxatdan oʻtish</div>
+        <div class="form-group">
+            <label>Ism-familiya (Majburiy)</label>
+            <input type="text" id="reg-name" placeholder="Ism va familiyangizni kiriting">
+        </div>
+        <div class="form-group">
+            <label>Email / Gmail (Majburiy)</label>
+            <input type="email" id="reg-email" placeholder="example@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>Parol (Kamida 6 ta belgi)</label>
+            <input type="password" id="reg-pass" placeholder="Parol o'ylab toping">
+        </div>
+        <button type="button" class="btn-submit" onclick="handleRegister()">Roʻyxatdan oʻtish</button>
+        <div class="switch-text">Hisobingiz bormi? <span onclick="toggleAuth('login')">Kirish</span></div>
+    </div>
+
+    <div class="auth-container" id="login-box" style="display: none;">
+        <div class="auth-title">Tizimga kirish</div>
+        <div class="form-group">
+            <label>Email (Gmail)</label>
+            <input type="email" id="login-email" placeholder="Emailingizni kiriting">
+        </div>
+        <div class="form-group">
+            <label>Parol</label>
+            <input type="password" id="login-pass" placeholder="Parolingizni kiriting">
+        </div>
+        <button type="button" class="btn-submit" onclick="handleLogin()">Kirish</button>
+        <div class="switch-text">Hisobingiz yo'qmi? <span onclick="toggleAuth('register')">Ro'yxatdan o'tish</span></div>
+    </div>
+
+    <script>
+        if(localStorage.getItem("isLoggedIn") === "true") { window.location.href = "/main"; }
+
+        function toggleAuth(type) {
+            if(type === 'login') {
+                document.getElementById("register-box").style.display = "none";
+                document.getElementById("login-box").style.display = "block";
+            } else {
+                document.getElementById("register-box").style.display = "block";
+                document.getElementById("login-box").style.display = "none";
+            }
+        }
+
+        function handleRegister() {
+            var name = document.getElementById("reg-name").value;
+            var email = document.getElementById("reg-email").value;
+            var pass = document.getElementById("reg-pass").value;
+
+            if(name.trim() === "" || email.trim() === "" || pass.trim() === "") { alert("Barcha maydonlarni to'ldiring!"); return; }
+
+            var letterRegex = /^[A-Za-zА-Яа-яЁёЎўҚқҒғҲҳ\s]+$/;
+            if(!letterRegex.test(name)) { alert("Ism-familiyaga faqat harflar kiriting!"); return; }
+
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            if(!emailRegex.test(email)) { alert("Faqat haqiqiy @gmail.com manzili qabul qilinadi!"); return; }
+
+            if(pass.length < 6) { alert("Parol kamida 6 ta belgi bo'lsin!"); return; }
+
+            localStorage.setItem("saved_name", name);
+            localStorage.setItem("saved_email", email);
+            localStorage.setItem("saved_pass", pass);
+            localStorage.setItem("isLoggedIn", "true");
+
+            alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+            window.location.href = "/main";
+        }
+
+        function handleLogin() {
+            var email = document.getElementById("login-email").value;
+            var pass = document.getElementById("login-pass").value;
+            if(email === localStorage.getItem("saved_email") && pass === localStorage.getItem("saved_pass")) {
+                localStorage.setItem("isLoggedIn", "true");
+                window.location.href = "/main";
+            } else { alert("Ma'lumotlar noto'g'ri!"); }
+        }
+    </script>
+</body>
+</html>
