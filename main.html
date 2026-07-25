@@ -46,15 +46,18 @@
         <div class="grid-sections">
             <div class="card">
                 <div><div class="card-icon">🏆</div><h2 class="card-title">Kitobxonlik Olimpiadasi</h2><p class="card-desc">Bilimingizni sinab ko'ring, test topshiriqlarini bajaring va sovrinli o'rinlarni qo'lga kiriting!</p></div>
-                <a href="/olimpiada" class="btn-link btn-olimpiada">Olimpiadaga kirish</a>
+                <!-- Ssilka internetga moslab to'g'rilandi 🚀 -->
+                <a href="olimpiada.html" class="btn-link btn-olimpiada">Olimpiadaga kirish</a>
             </div>
             <div class="card">
-                <div><div class="card-icon">💬</div><h2 class="card-title">Umumiy Chat Xonasi</h2><p class="card-desc">Tizimdagi barcha kitobxonlar (10 000+ a'zolar) bilan guruhda ochiq muloqot qiling.</p></div>
-                <a href="/chat" class="btn-link btn-chat">Chatga qo'shilish</a>
+                <div><div class="card-icon">💬</div><h2 class="card-title">Umumiy Chat Xonasi</h2><p class="card-desc">Tizimdagi barcha kitobxonlar bilan guruhda ochiq muloqot qiling.</p></div>
+                <!-- Ssilka internetga moslab to'g'rilandi 🚀 -->
+                <a href="chat.html" class="btn-link btn-chat">Chatga qo'shilish</a>
             </div>
             <div class="card">
                 <div><div class="card-icon">👨‍💻</div><h2 class="card-title">Admin bilan Bog'lanish</h2><p class="card-desc">Admin bilan maxfiy va shaxsiy tarzda gaplashing.</p></div>
-                <a href="/aloqa" class="btn-link btn-admin">Admin bilan bog'lanish</a>
+                <!-- Ssilka internetga moslab to'g'rilandi 🚀 -->
+                <a href="aloqa.html" class="btn-link btn-admin">Admin bilan bog'lanish</a>
             </div>
         </div>
         <div class="site-footer">Loyiha muallifi: <span>Muslimbek Xalmatov</span> | © 2026 Barcha huquqlar himoyalangan.</div>
@@ -63,9 +66,10 @@
         window.onload = function() {
             var savedName = localStorage.getItem("saved_name");
             if (savedName) { document.getElementById("display-user-name").innerText = "👋 Salom, " + savedName + "!"; } 
-            else { window.location.href = "/"; }
-        };
-        function logout() { localStorage.removeItem("isLoggedIn"); window.location.href = "/"; }
+            else { window.location.href = "index.html"; }
+       };
+        // Logout ssilka ham to'g'rilandi
+        function logout() { localStorage.removeItem("isLoggedIn"); window.location.href = "index.html"; }
     </script>
 </body>
 </html>
