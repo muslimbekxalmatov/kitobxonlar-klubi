@@ -1,105 +1,71 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitobxonlar Clubi - Kirish va Ro'yxatdan o'tish</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #f4f6f9; color: #111111; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .auth-container { background: #ffffff; width: 380px; padding: 30px; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .auth-title { text-align: center; font-size: 24px; font-weight: 600; margin-bottom: 25px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; color: #666; font-size: 14px; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #eaeaea; border-radius: 8px; font-size: 15px; outline: none; background-color: #fafafa; transition: 0.2s; }
-        .form-group input:focus { border-color: #0066ff; background-color: #ffffff; }
-        .btn-submit { width: 100%; padding: 12px; background-color: #0066ff; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 10px; }
-        .btn-submit:hover { background-color: #0052cc; }
-        .switch-text { text-align: center; margin-top: 15px; font-size: 14px; color: #666; }
-        .switch-text span { color: #0066ff; cursor: pointer; text-decoration: underline; font-weight: 500; }
-    </style>
-</head>
-<body>
-    <div class="auth-container" id="register-box">
-        <div class="auth-title">Roʻyxatdan oʻtish</div>
-        <div class="form-group">
-            <label>Ism-familiya (Majburiy)</label>
-            <input type="text" id="reg-name" placeholder="Ism va familiyangizni kiriting">
-        </div>
-        <div class="form-group">
-            <label>Email / Gmail (Majburiy)</label>
-            <input type="email" id="reg-email" placeholder="example@gmail.com">
-        </div>
-        <div class="form-group">
-            <label>Parol (Kamida 6 ta belgi)</label>
-            <input type="password" id="reg-pass" placeholder="Parol o'ylab toping">
-        </div>
-        <button type="button" class="btn-submit" onclick="handleRegister()">Roʻyxatdan oʻtish</button>
-        <div class="switch-text">Hisobingiz bormi? <span onclick="toggleAuth('login')">Kirish</span></div>
-    </div>
+<div id="ai-widget" style="max-width:480px;margin:24px auto;padding:20px;
+  border-radius:16px;background:#0f1226;color:#fff;font-family:sans-serif;
+  box-shadow:0 4px 20px rgba(0,0,0,0.25);">
+  <h3 style="margin:0 0 12px;font-size:18px;">📚 Kitob bo'yicha AI yordamchi</h3>
+  <textarea id="ai-input" placeholder="Masalan: 'O'zbek adabiyotidan sarguzasht janrida 3 ta kitob tavsiya qil'"
+    style="width:100%;min-height:70px;padding:10px;border-radius:10px;border:none;
+    resize:vertical;font-size:14px;box-sizing:border-box;"></textarea>
+  <button id="ai-send" style="margin-top:10px;padding:10px 18px;border:none;
+    border-radius:10px;background:#4f6df5;color:#fff;font-weight:600;cursor:pointer;">
+    Yuborish
+  </button>
+  <div id="ai-output" style="margin-top:14px;padding:12px;border-radius:10px;
+    background:#1b1f3b;min-height:24px;font-size:14px;line-height:1.5;
+    white-space:pre-wrap;"></div>
+</div>
 
-    <div class="auth-container" id="login-box" style="display: none;">
-        <div class="auth-title">Tizimga kirish</div>
-        <div class="form-group">
-            <label>Email (Gmail)</label>
-            <input type="email" id="login-email" placeholder="Emailingizni kiriting">
-        </div>
-        <div class="form-group">
-            <label>Parol</label>
-            <input type="password" id="login-pass" placeholder="Parolingizni kiriting">
-        </div>
-        <button type="button" class="btn-submit" onclick="handleLogin()">Kirish</button>
-        <div class="switch-text">Hisobingiz yo'qmi? <span onclick="toggleAuth('register')">Ro'yxatdan o'tish</span></div>
-    </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-ai.js";
 
-    <script>
-        // Redirect to'g'rilandi: main -> main.html
-        if(localStorage.getItem("isLoggedIn") === "true") { window.location.href = "main.html"; }
+  // ⬇️⬇️⬇️ SHU YERGA O'ZINGIZNING firebaseConfig QIYMATLARINGIZNI QO'YING ⬇️⬇️⬇️
+  const firebaseConfig = {
+    apiKey: "BU_YERGA_API_KEY",
+    authDomain: "BU_YERGA_AUTH_DOMAIN",
+    projectId: "BU_YERGA_PROJECT_ID",
+    storageBucket: "BU_YERGA_STORAGE_BUCKET",
+    messagingSenderId: "BU_YERGA_SENDER_ID",
+    appId: "BU_YERGA_APP_ID"
+  };
+  // ⬆️⬆️⬆️ ------------------------------------------------------ ⬆️⬆️⬆️
 
-        function toggleAuth(type) {
-            if(type === 'login') {
-                document.getElementById("register-box").style.display = "none";
-                document.getElementById("login-box").style.display = "block";
-            } else {
-                document.getElementById("register-box").style.display = "block";
-                document.getElementById("login-box").style.display = "none";
-            }
-        }
+  const firebaseApp = initializeApp(firebaseConfig);
+  const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
+  const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
 
-        function handleRegister() {
-            var name = document.getElementById("reg-name").value;
-            var email = document.getElementById("reg-email").value;
-            var pass = document.getElementById("reg-pass").value;
+  const inputEl = document.getElementById("ai-input");
+  const outputEl = document.getElementById("ai-output");
+  const sendBtn = document.getElementById("ai-send");
 
-            if(name.trim() === "" || email.trim() === "" || pass.trim() === "") { alert("Barcha maydonlarni to'ldiring!"); return; }
+  async function askAI() {
+    const prompt = inputEl.value.trim();
+    if (!prompt) return;
 
-            var letterRegex = /^[A-Za-zА-Яа-яЁёЎўҚқҒғҲҳ\s]+$/;
-            if(!letterRegex.test(name)) { alert("Ism-familiyaga faqat harflar kiriting!"); return; }
+    sendBtn.disabled = true;
+    sendBtn.textContent = "Yuklanmoqda...";
+    outputEl.textContent = "";
 
-            var emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-            if(!emailRegex.test(email)) { alert("Faqat haqiqiy @gmail.com manzili qabul qilinadi!"); return; }
+    try {
+      const fullPrompt =
+        "Sen 'Kitobxonlar Klubi' veb-saytining kitob bo'yicha yordamchisisan. " +
+        "O'zbek tilida, qisqa va foydali javob ber. Savol: " + prompt;
 
-            if(pass.length < 6) { alert("Parol kamida 6 ta belgi bo'lsin!"); return; }
+      const result = await model.generateContent(fullPrompt);
+      outputEl.textContent = result.response.text();
+    } catch (err) {
+      outputEl.textContent = "❌ Xatolik yuz berdi: " + err.message;
+      console.error(err);
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Yuborish";
+    }
+  }
 
-            localStorage.setItem("saved_name", name);
-            localStorage.setItem("saved_email", email);
-            localStorage.setItem("saved_pass", pass);
-            localStorage.setItem("isLoggedIn", "true");
-
-            alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-            // Redirect to'g'rilandi: main -> main.html
-            window.location.href = "main.html";
-        }
-
-        function handleLogin() {
-            var email = document.getElementById("login-email").value;
-            var pass = document.getElementById("login-pass").value;
-            if(email === localStorage.getItem("saved_email") && pass === localStorage.getItem("saved_pass")) {
-                localStorage.setItem("isLoggedIn", "true");
-                // Redirect to'g'rilandi: main -> main.html
-                window.location.href = "main.html";
-            } else { alert("Ma'lumotlar noto'g'ri!"); }
-        }
-    </script>
-</body>
-</html>
+  sendBtn.addEventListener("click", askAI);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      askAI();
+    }
+  });
+</script>

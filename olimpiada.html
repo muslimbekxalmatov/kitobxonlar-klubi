@@ -9,7 +9,7 @@
         body { background-color: #f4f6f9; color: #111111; padding: 20px; }
 
         .wrapper { max-width: 700px; margin: 50px auto; }
-        
+
         .quiz-card {
             background: #ffffff;
             border: 1px solid #eaeaea;
@@ -27,7 +27,7 @@
             margin-bottom: 25px;
         }
         .quiz-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 700; color: #ff9500; }
-        
+
         .btn-exit {
             padding: 10px 18px;
             background-color: #111111;
@@ -40,7 +40,6 @@
             cursor: pointer;
         }
 
-        /* Start Oynasi va Reyting */
         .start-box { text-align: center; padding: 20px 0; }
         .rating-badge {
             display: inline-block;
@@ -66,8 +65,10 @@
             transition: 0.2s;
         }
         .btn-start:hover { background-color: #e08400; }
+        .btn-start:disabled { background-color: #cccccc; cursor: not-allowed; }
 
-        /* Test qismi */
+        .already-done-box { background-color: #eafaf0; border: 1px solid #b8ebc8; color: #1c6b3a; padding: 18px; border-radius: 10px; font-size: 15px; margin-bottom: 10px; }
+
         .quiz-section { display: none; }
         .question-text { font-size: 18px; font-weight: 600; line-height: 1.5; margin-bottom: 25px; color: #1c1c1e; }
         .options-group { display: flex; flex-direction: column; gap: 12px; }
@@ -88,7 +89,6 @@
         .option-btn:hover { border-color: #111111; background-color: #fafafa; }
         .option-btn.selected { border: 2px solid #111111; font-weight: 600; }
 
-        /* Natija oynasi */
         .result-box { display: none; text-align: center; padding: 20px 0; }
         .result-title { font-size: 24px; font-weight: 700; color: #34c759; margin-bottom: 10px; }
     </style>
@@ -97,20 +97,18 @@
 
     <div class="wrapper">
         <div class="quiz-card">
-            
+
             <div class="quiz-header">
                 <div class="quiz-title">🏆 Onlayn Olimpiada</div>
                 <a href="main.html" class="btn-exit">Chiqish</a>
             </div>
 
-            <!-- 1. KIRGANDA REYTING VA BOSHLASH OYNASI -->
             <div class="start-box" id="startBox">
                 <div class="rating-badge" id="userRating">📊 Hisoblanmoqda...</div>
-                <p class="start-desc">Olimpiada savollaridan iborat. Har bir to'g'ri javob reytingdagi o'rningizni oshiradi. Tayyor bo'lsangiz, testni boshlang!</p>
-                <button class="btn-start" onclick="startQuiz()">Testni boshlash</button>
+                <p class="start-desc" id="startDesc">Olimpiada savollaridan iborat. Har bir to'g'ri javob reytingdagi o'rningizni oshiradi. Testni faqat bir marta yechish mumkin — shuning uchun diqqat bilan javob bering!</p>
+                <button class="btn-start" id="startBtn" onclick="startQuiz()">Testni boshlash</button>
             </div>
 
-            <!-- 2. TESTLAR QISMI -->
             <div class="quiz-section" id="quizSection">
                 <div class="question-text" id="question">Savol yuklanmoqda...</div>
                 <div class="options-group">
@@ -120,7 +118,6 @@
                 </div>
             </div>
 
-            <!-- 3. NATIJA OYNASI -->
             <div class="result-box" id="resultBox">
                 <div class="result-title">🎉 Olimpiada yakunlandi!</div>
                 <p id="scoreText" style="font-size: 16px; color: #666; margin-bottom: 25px;"></p>
@@ -130,10 +127,25 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
     <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyBMXo1JAkr1nZQuUXPZtDoj-ilirRc0ZSM",
+            authDomain: "kitobxonlar-klubi.firebaseapp.com",
+            projectId: "kitobxonlar-klubi",
+            storageBucket: "kitobxonlar-klubi.firebasestorage.app",
+            messagingSenderId: "1095378012609",
+            appId: "1:1095378012609:web:ab1bc57f2ff1042f874740"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
         var quizData = [
-            { question: "“O‘tkan kunlar” romanida Otabekning otasining ismi kim?", a: "Ziyo shohichi", b: "Yusufbek hoji", c: "Alimdor dodxoh", correct: "B" },
-            { question: "“Mehrobdan chayon” romani muallifi kim?", a: "Abdulla Qodiriy", b: "Cho'lpon", c: "Abdulla Qahhor", correct: "A" }
+            { question: "\u201cO\u2018tkan kunlar\u201d romanida Otabekning otasining ismi kim?", a: "Ziyo shohichi", b: "Yusufbek hoji", c: "Alimdor dodxoh", correct: "B" },
+            { question: "\u201cMehrobdan chayon\u201d romani muallifi kim?", a: "Abdulla Qodiriy", b: "Cho'lpon", c: "Abdulla Qahhor", correct: "A" }
         ];
 
         var currentQuestionIndex = 0;
@@ -141,31 +153,58 @@
         var currentEmail = localStorage.getItem("saved_email") || "test@test.com";
         var currentName = localStorage.getItem("saved_name") || "Kitobxon";
 
+        var attemptDocId = currentEmail.replace(/[^a-zA-Z0-9]/g, "_");
+
         window.onload = function() {
-            calculateRating();
+            checkIfAlreadyPlayed();
         };
 
-        function calculateRating() {
-            var leaderboard = JSON.parse(localStorage.getItem("olimpiada_leaderboard")) || [];
-            var userPerformance = leaderboard.find(user => user.email === currentEmail);
-            
-            leaderboard.sort((a, b) => b.ball - a.ball);
+        function checkIfAlreadyPlayed() {
+            db.collection("olimpiada_attempts").doc(attemptDocId).get().then(function(doc) {
+                if (doc.exists) {
+                    var data = doc.data();
+                    document.getElementById("startDesc").style.display = "none";
+                    document.getElementById("userRating").style.display = "none";
 
-            var myRank = 1;
-            for(var i = 0; i < leaderboard.length; i++) {
-                if(leaderboard[i].email === currentEmail) {
-                    myRank = i + 1;
-                    break;
+                    var box = document.createElement("div");
+                    box.className = "already-done-box";
+                    box.innerHTML = "✅ Siz bu olimpiadani allaqachon topshirgansiz.<br>Natijangiz: <b>" + data.ball + " / " + quizData.length + "</b>";
+                    document.getElementById("startBox").insertBefore(box, document.getElementById("startBtn"));
+
+                    document.getElementById("startBtn").disabled = true;
+                    document.getElementById("startBtn").innerText = "Test allaqachon topshirilgan";
+
+                    showLeaderboardRank();
+                } else {
+                    calculateRating();
                 }
-            }
+            });
+        }
 
-            var totalParticipants = leaderboard.length === 0 ? 1 : leaderboard.length;
-            if(!userPerformance && leaderboard.length > 0) {
-                myRank = leaderboard.length + 1;
-                totalParticipants++;
-            }
+        function calculateRating() {
+            db.collection("olimpiada_attempts").orderBy("ball", "desc").get().then(function(snapshot) {
+                var total = snapshot.size;
+                document.getElementById("userRating").innerText = "📊 " + currentName.toLowerCase() + ", hozircha " + total + " ta ishtirokchi test topshirgan. Siz hali topshirmagansiz!";
+            });
+        }
 
-            document.getElementById("userRating").innerText = "📊 " + currentName.toLowerCase() + ", sizning joriy o'rningiz: " + myRank + "-o'rin (Jami " + totalParticipants + " ta ishtirokchi ichida)";
+        function showLeaderboardRank() {
+            db.collection("olimpiada_attempts").orderBy("ball", "desc").get().then(function(snapshot) {
+                var rank = 1;
+                var total = snapshot.size;
+                var found = false;
+                snapshot.forEach(function(doc) {
+                    if (!found) {
+                        if (doc.id === attemptDocId) {
+                            found = true;
+                        } else {
+                            rank++;
+                        }
+                    }
+                });
+                document.getElementById("userRating").innerText = "📊 " + currentName.toLowerCase() + ", sizning o'rningiz: " + rank + "-o'rin (Jami " + total + " ishtirokchi ichida)";
+                document.getElementById("userRating").style.display = "inline-block";
+            });
         }
 
         function startQuiz() {
@@ -187,7 +226,7 @@
             document.getElementById("optC").innerText = "C) " + currentQuiz.c;
 
             var buttons = document.querySelectorAll('.option-btn');
-            buttons.forEach(btn => btn.classList.remove('selected'));
+            buttons.forEach(function(btn) { btn.classList.remove('selected'); });
         }
 
         function selectOption(reply) {
@@ -208,29 +247,29 @@
             document.getElementById("quizSection").style.display = "none";
             document.getElementById("resultBox").style.display = "block";
 
-            var leaderboard = JSON.parse(localStorage.getItem("olimpiada_leaderboard")) || [];
-            var userIndex = leaderboard.findIndex(user => user.email === currentEmail);
-            
-            if(userIndex > -1) {
-                if(score > leaderboard[userIndex].ball) {
-                    leaderboard[userIndex].ball = score;
-                }
-            } else {
-                leaderboard.push({ name: currentName, email: currentEmail, ball: score });
-            }
+            db.collection("olimpiada_attempts").doc(attemptDocId).set({
+                name: currentName,
+                email: currentEmail,
+                ball: score,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function() {
+                return db.collection("olimpiada_attempts").orderBy("ball", "desc").get();
+            }).then(function(snapshot) {
+                var rank = 1;
+                var total = snapshot.size;
+                var found = false;
+                snapshot.forEach(function(doc) {
+                    if (!found) {
+                        if (doc.id === attemptDocId) {
+                            found = true;
+                        } else {
+                            rank++;
+                        }
+                    }
+                });
 
-            localStorage.setItem("olimpiada_leaderboard", JSON.stringify(leaderboard));
-            leaderboard.sort((a, b) => b.ball - a.ball);
-
-            var newRank = 1;
-            for(var i = 0; i < leaderboard.length; i++) {
-                if(leaderboard[i].email === currentEmail) {
-                    newRank = i + 1;
-                    break;
-                }
-            }
-
-            document.getElementById("scoreText").innerHTML = "Siz jami " + quizData.length + " ta savoldan <b>" + score + "</b> tasiga to'g'ri javob berdingiz!<br><br><b>Yangi reytingingiz:</b> " + newRank + "-o'ringa joylashdingiz! 🚀";
+                document.getElementById("scoreText").innerHTML = "Siz jami " + quizData.length + " ta savoldan <b>" + score + "</b> tasiga to'g'ri javob berdingiz!<br><br><b>Reytingingiz:</b> " + rank + "-o'ringa joylashdingiz! 🚀";
+            });
         }
     </script>
 </body>
