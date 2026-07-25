@@ -53,7 +53,8 @@
     </div>
 
     <script>
-        if(localStorage.getItem("isLoggedIn") === "true") { window.location.href = "/main"; }
+        // Redirect to'g'rilandi: main -> main.html
+        if(localStorage.getItem("isLoggedIn") === "true") { window.location.href = "main.html"; }
 
         function toggleAuth(type) {
             if(type === 'login') {
@@ -86,7 +87,8 @@
             localStorage.setItem("isLoggedIn", "true");
 
             alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-            window.location.href = "/main";
+            // Redirect to'g'rilandi: main -> main.html
+            window.location.href = "main.html";
         }
 
         function handleLogin() {
@@ -94,7 +96,8 @@
             var pass = document.getElementById("login-pass").value;
             if(email === localStorage.getItem("saved_email") && pass === localStorage.getItem("saved_pass")) {
                 localStorage.setItem("isLoggedIn", "true");
-                window.location.href = "/main";
+                // Redirect to'g'rilandi: main -> main.html
+                window.location.href = "main.html";
             } else { alert("Ma'lumotlar noto'g'ri!"); }
         }
     </script>
