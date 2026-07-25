@@ -1,75 +1,71 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boshqaruv paneli - Kitobxonlar platformasi</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #f9fafb; color: #111111; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: #ffffff; border-bottom: 1px solid #f0f0f0; }
-        .logo { font-weight: bold; font-size: 18px; color: #0066ff; }
-        .user-menu { display: flex; align-items: center; gap: 15px; }
-        .user-greeting { font-size: 15px; font-weight: 500; color: #333; }
-        .btn-logout { padding: 8px 14px; background-color: #ff3b30; color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
-        .container { max-width: 1000px; margin: 50px auto 20px auto; padding: 0 20px; }
-        h1 { font-size: 32px; margin-bottom: 10px; font-weight: 700; text-align: center; }
-        .subtitle { color: #666; font-size: 16px; margin-bottom: 40px; text-align: center; }
-        .grid-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-        .card { background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
-        .card-icon { font-size: 32px; margin-bottom: 15px; }
-        .card-title { font-size: 20px; font-weight: 600; margin-bottom: 10px; }
-        .card-desc { color: #666; font-size: 14px; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
-        .btn-link { display: block; text-align: center; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: 0.2s; }
-        .btn-olimpiada { background-color: #ff9500; color: white; }
-        .btn-olimpiada:hover { background-color: #e08400; }
-        .btn-chat { background-color: #34c759; color: white; }
-        .btn-chat:hover { background-color: #28a745; }
-        .btn-admin { background-color: #007aff; color: white; }
-        .btn-admin:hover { background-color: #0062cc; }
-        .site-footer { text-align: center; margin-top: 60px; padding: 25px 0; border-top: 1px solid #eaeaea; color: #8e8e93; font-size: 14px; font-weight: 500; }
-        .site-footer span { color: #111111; font-weight: 600; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="logo">📚 Kitobxonlar Clubi</div>
-        <div class="user-menu">
-            <span class="user-greeting" id="display-user-name">👋 Salom!</span>
-            <button class="btn-logout" onclick="logout()">Chiqish</button>
-        </div>
-    </div>
-    <div class="container">
-        <h1>Boshqaruv paneli</h1>
-        <p class="subtitle">O'zingizga kerakli bo'limni tanlang va platformadan foydalaning.</p>
-        <div class="grid-sections">
-            <div class="card">
-                <div><div class="card-icon">🏆</div><h2 class="card-title">Kitobxonlik Olimpiadasi</h2><p class="card-desc">Bilimingizni sinab ko'ring, test topshiriqlarini bajaring va sovrinli o'rinlarni qo'lga kiriting!</p></div>
-                <!-- Ssilka internetga moslab to'g'rilandi 🚀 -->
-                <a href="olimpiada.html" class="btn-link btn-olimpiada">Olimpiadaga kirish</a>
-            </div>
-            <div class="card">
-                <div><div class="card-icon">💬</div><h2 class="card-title">Umumiy Chat Xonasi</h2><p class="card-desc">Tizimdagi barcha kitobxonlar bilan guruhda ochiq muloqot qiling.</p></div>
-                <!-- Ssilka internetga moslab to'g'rilandi 🚀 -->
-                <a href="chat.html" class="btn-link btn-chat">Chatga qo'shilish</a>
-            </div>
-            <div class="card">
-                <div><div class="card-icon">👨‍💻</div><h2 class="card-title">Admin bilan Bog'lanish</h2><p class="card-desc">Admin bilan maxfiy va shaxsiy tarzda gaplashing.</p></div>
-                <!-- Ssilka internetga moslab to'g'rilandi 🚀 -->
-                <a href="aloqa.html" class="btn-link btn-admin">Admin bilan bog'lanish</a>
-            </div>
-        </div>
-        <div class="site-footer">Loyiha muallifi: <span>Muslimbek Xalmatov</span> | © 2026 Barcha huquqlar himoyalangan.</div>
-    </div>
-    <script>
-        window.onload = function() {
-            var savedName = localStorage.getItem("saved_name");
-            if (savedName) { document.getElementById("display-user-name").innerText = "👋 Salom, " + savedName + "!"; } 
-            else { window.location.href = "index.html"; }
-       };
-        // Logout ssilka ham to'g'rilandi
-        function logout() { localStorage.removeItem("isLoggedIn"); window.location.href = "index.html"; }
-    </script>
-</body>
-</html>
+<div id="ai-widget" style="max-width:480px;margin:24px auto;padding:20px;
+  border-radius:16px;background:#0f1226;color:#fff;font-family:sans-serif;
+  box-shadow:0 4px 20px rgba(0,0,0,0.25);">
+  <h3 style="margin:0 0 12px;font-size:18px;">📚 Kitob bo'yicha AI yordamchi</h3>
+  <textarea id="ai-input" placeholder="Masalan: 'O'zbek adabiyotidan sarguzasht janrida 3 ta kitob tavsiya qil'"
+    style="width:100%;min-height:70px;padding:10px;border-radius:10px;border:none;
+    resize:vertical;font-size:14px;box-sizing:border-box;"></textarea>
+  <button id="ai-send" style="margin-top:10px;padding:10px 18px;border:none;
+    border-radius:10px;background:#4f6df5;color:#fff;font-weight:600;cursor:pointer;">
+    Yuborish
+  </button>
+  <div id="ai-output" style="margin-top:14px;padding:12px;border-radius:10px;
+    background:#1b1f3b;min-height:24px;font-size:14px;line-height:1.5;
+    white-space:pre-wrap;"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-ai.js";
+
+  // ⬇️⬇️⬇️ SHU YERGA O'ZINGIZNING firebaseConfig QIYMATLARINGIZNI QO'YING ⬇️⬇️⬇️
+  const firebaseConfig = {
+    apiKey: "BU_YERGA_API_KEY",
+    authDomain: "BU_YERGA_AUTH_DOMAIN",
+    projectId: "BU_YERGA_PROJECT_ID",
+    storageBucket: "BU_YERGA_STORAGE_BUCKET",
+    messagingSenderId: "BU_YERGA_SENDER_ID",
+    appId: "BU_YERGA_APP_ID"
+  };
+  // ⬆️⬆️⬆️ ------------------------------------------------------ ⬆️⬆️⬆️
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  const ai = getAI(firebaseApp, { backend: new GoogleAIBackend() });
+  const model = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
+
+  const inputEl = document.getElementById("ai-input");
+  const outputEl = document.getElementById("ai-output");
+  const sendBtn = document.getElementById("ai-send");
+
+  async function askAI() {
+    const prompt = inputEl.value.trim();
+    if (!prompt) return;
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = "Yuklanmoqda...";
+    outputEl.textContent = "";
+
+    try {
+      const fullPrompt =
+        "Sen 'Kitobxonlar Klubi' veb-saytining kitob bo'yicha yordamchisisan. " +
+        "O'zbek tilida, qisqa va foydali javob ber. Savol: " + prompt;
+
+      const result = await model.generateContent(fullPrompt);
+      outputEl.textContent = result.response.text();
+    } catch (err) {
+      outputEl.textContent = "❌ Xatolik yuz berdi: " + err.message;
+      console.error(err);
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Yuborish";
+    }
+  }
+
+  sendBtn.addEventListener("click", askAI);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      askAI();
+    }
+  });
+</script>
